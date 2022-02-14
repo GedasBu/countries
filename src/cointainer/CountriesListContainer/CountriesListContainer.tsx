@@ -7,11 +7,15 @@ import { useState, useMemo, useEffect } from "react";
 import Sort from "../../components/Sort/Sort";
 import { Countries } from "../../api/countries/types";
 import Filter from "../../components/Filter/Filter";
+import { sortOptions, filterOptions } from "../../constants/constants";
 
 const CountriesListContainer = (): JSX.Element => {
   const { data } = useQuery("countries", () => getCountries());
   const [countries, setCountries] = useState<Countries[]>(data ? data : []);
   const [currentPage, setCurrentPage] = useState(1);
+  const [filterValue, setFilterValue] = useState("");
+  const [sortValue, setSortValue] = useState("");
+
   const pageSize = 10;
 
   useEffect(() => {
@@ -20,40 +24,46 @@ const CountriesListContainer = (): JSX.Element => {
     }
   }, [data]);
 
-  const sortHandler = (value: string) => {
+  const sortHandler = (value: string | undefined) => {
+    setSortValue(value || "");
     const sortArray = [...countries];
-    if (value === "asc") {
-      sortArray?.sort((a, b) => (a.name < b.name ? -1 : 1));
+    if (value === sortOptions.asc) {
+      sortArray?.sort(function (a, b) {
+        return a.name.localeCompare(b.name, "en-Latn-US");
+      });
     } else {
-      sortArray?.sort((a, b) => (b.name < a.name ? -1 : 1));
+      sortArray?.sort(function (a, b) {
+        return b.name.localeCompare(a.name, "en-Latn-US");
+      });
     }
     setCountries(sortArray);
   };
 
-  const filterHandler = (value: string) => {
-    const filterArray = (data?[...data]:[]);
-    if (value === "<lt") {
+  const filterHandler = (value: string | undefined) => {
+    setFilterValue(value || "");
+    const filterArray = data ? [...data] : [];
+    if (value === filterOptions.smallerLT) {
       const filteredArray = filterArray.filter(function (country) {
         return country.area < 65300;
       });
       setCountries(filteredArray);
     } else {
-      
       const filteredArray = filterArray.filter(function (country) {
-        return (country.region === "Oceania");
+        return country.region === filterOptions.oceania;
       });
       setCountries(filteredArray);
     }
   };
 
-  const resetHandler = ()=>{
-    setCountries(data?data:[]);
-  }
+  const resetHandler = () => {
+    setCountries(data ? data : []);
+    setFilterValue("");
+    setSortValue("");
+  };
 
   const countriesTableData = useMemo(() => {
     const firstPageIndex = (currentPage - 1) * pageSize;
     const lastPageIndex = firstPageIndex + pageSize;
-
     return countries?.slice(firstPageIndex, lastPageIndex);
   }, [currentPage, countries]);
 
@@ -61,16 +71,13 @@ const CountriesListContainer = (): JSX.Element => {
     <div className={styles.container}>
       <div className={styles.sortFilterContainer}>
         <div>
-          <Sort onChange={sortHandler} />
+          <Sort onChange={sortHandler} value={sortValue} />
         </div>
         <div>
-          <Filter onChange={filterHandler} />
+          <Filter onChange={filterHandler} value={filterValue} />
         </div>
-        <button onClick = {resetHandler}>
-          Reset
-        </button>
+        <button onClick={resetHandler}>Reset</button>
       </div>
-
       <div>
         {countriesTableData?.map((country) => (
           <CountryCard key={country.name} {...country} />
@@ -81,7 +88,7 @@ const CountriesListContainer = (): JSX.Element => {
           pageSize={pageSize}
           currentPage={currentPage}
           siblingCount={1}
-          totalCount={data?.length || 0}
+          totalCount={countries.length}
           onPageChange={(page) => setCurrentPage(page)}
         />
       </div>

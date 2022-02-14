@@ -1,3 +1,9 @@
+:root {
+  --primary: rgb(212, 246, 212);
+  --secondary: lightgreen;
+  --button: rgb(120, 209, 120);
+}
+
 body {
   margin: 0;
   padding: 0;

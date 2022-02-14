@@ -1,13 +1,15 @@
-import Select, { OnChangeValue } from "react-select";
-
-import styles from "./Filter.module.css";
+import Select, { OnChangeValue, StylesConfig } from "react-select";
 
 type Option = {
   value: string;
   label: string;
 };
+type FilterProps = {
+  onChange: (value: string | undefined) => void;
+  value: string;
+};
 
-const Filter = ({ onChange }: any) => {
+const Filter = ({ onChange, value }: FilterProps): JSX.Element => {
   const options = [
     { value: "<lt", label: "Smaller than LT" },
     { value: "ocean", label: "Region Oceania" },
@@ -17,30 +19,34 @@ const Filter = ({ onChange }: any) => {
     onChange(value?.value);
   };
 
-  const customStyles = {
-    option: (provided: any, state: any) => ({
+  const customStyles: StylesConfig<Option, false> = {
+    option: (provided) => ({
       ...provided,
       color: "black",
     }),
-    control: (provided: any, state: any) => ({
+    control: (provided) => ({
       ...provided,
-      // none of react-select's styles are passed to <Control />
       width: 170,
-      backgroundColor: "lightgreen",
+      backgroundColor: "var(--button)",
       boxShadow: "none",
       border: 0,
+      marginLeft: 10,
     }),
 
-    placeholder: (provided: any, state: any) => ({
+    placeholder: (provided) => ({
       ...provided,
       color: "black",
     }),
   };
 
   return (
-    <div className={styles.filterContainer}>
-      <Select placeholder={"Filter..."} onChange={setFilter} options={options} styles={customStyles} />
-    </div>
+    <Select
+      placeholder={"Filter..."}
+      onChange={setFilter}
+      options={options}
+      styles={customStyles}
+      value={options.find((option) => option.value === value) || null}
+    />
   );
 };
 

@@ -1,5 +1,5 @@
 .container {
-    background-color: lightgray;
+    background-color: var(--primary);
     padding: 20px;
 }
 .sortFilterContainer{
@@ -9,8 +9,10 @@
 }
 
 button {
-    background-color: lightgreen;
+    background-color: var(--button);
     border-radius: 5px;
     border: 0;
     margin-left: 10px;
+    width: 80px;
+    border-radius: 5px;
 }

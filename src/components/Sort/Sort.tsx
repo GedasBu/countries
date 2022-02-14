@@ -1,11 +1,16 @@
-import Select, { OnChangeValue } from "react-select";
+import Select, { OnChangeValue, StylesConfig } from "react-select";
 
 type Option = {
   value: string;
   label: string;
 };
 
-const Sort = ({ onChange }: any) => {
+type SortProps = {
+  onChange: (value: string | undefined) => void;
+  value: string;
+};
+
+const Sort = ({ onChange, value }: SortProps): JSX.Element => {
   const options = [
     { value: "asc", label: "Name ASC" },
     { value: "dsc", label: "Name DESC" },
@@ -15,21 +20,20 @@ const Sort = ({ onChange }: any) => {
     onChange(value?.value);
   };
 
-  const customStyles = {
-    option: (provided: any, state: any) => ({
+  const customStyles: StylesConfig<Option, false> = {
+    option: (provided) => ({
       ...provided,
       color: "black",
     }),
-    control: (provided: any, state: any) => ({
+    control: (provided) => ({
       ...provided,
-      // none of react-select's styles are passed to <Control />
       width: 150,
-      backgroundColor: "lightgreen",
+      backgroundColor: "var(--button)",
       boxShadow: "none",
       border: 0,
     }),
 
-    placeholder: (provided: any, state: any) => ({
+    placeholder: (provided) => ({
       ...provided,
       color: "black",
     }),
@@ -42,6 +46,7 @@ const Sort = ({ onChange }: any) => {
         onChange={setSort}
         options={options}
         styles={customStyles}
+        value={options.find((option) => option.value === value) || null}
       />
     </div>
   );
